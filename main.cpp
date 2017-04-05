@@ -12,14 +12,22 @@ void seperateInput(char*);
 void convertFileInput(char*);
 void visualizeTreeUntilMaxDepth(TreeNode* head);
 void searchAndDelete(TreeNode*, char*, bool&);
-void updateTreeColors(TreeNode*, TreeNode*);
+void updateTreeColors(TreeNode*, TreeNode*, bool&);
+void separateInput(char*);
+void performRotation(TreeNode*);
+char* directionsToBalancedNode(int, int, char*&);
+int convertCharPointerToInt(char*);
+void addNumberToTree(TreeNode*, TreeNode*, TreeNode*);
+int convertCharToInt(char);
 
 int main(){
-
+	cout << "dots in visualization represent empty locations\n";
 	cout << "Would you like to input an a bunch of numbers or a textfile (1 = numbers, 2 = textfile):\n";
 	char* input = new char[2];
-	cin.getline(input, 2);
+	//cin.getline(input, 2);
 	
+	separateInput("2 1 7 5 3");
+	/*
 	if(input[0] == '2'){//textfile input
 		
 		cout << "Input file name:\n";
@@ -36,58 +44,106 @@ int main(){
 		
 		separateInput(input);
 	}
-	
+	*/
 }
 
-void updateTreeColors(TreeNode* head, TreeNode* current){
+void updateTreeColors(TreeNode* head, TreeNode* current, bool& updated){
 	if(current != NULL){
-		if(current == head){//at root of tree
-			if(current->isBlack() != true){//assures root is black
+		visualizeTreeUntilMaxDepth(head);
+		if(current->getParent() == NULL){//at root of tree
+			
+			if(current->getColor() != true){//assures root is black
+				updated = true;
 				current->setColor(true);
 			}
-			if(current->getLeft() != NULL){//runs its children
-				current = current->getLeft();
-				updateTreeColors(head, current);
-			}
 			
-			if(current->getRight() != NULL){
-				current = current->getRight();
-				updateTreeColors(head, current);
-			}
-			
-		}else if(current->isBlack() != true){//parent is not red and current is red
+		}else if((current->getParent())->getColor() != true && current->getColor() != true){//parent is red and current is red
+			updated = true;
 			TreeNode* parent = current->getParent();//parent should NEVER be null here
-			if(parent != NULL){
-				TreeNode* sibling = current->getSibling();
-				
-				if(sibling != NULL){
-					if(sibling->isBlack()){
-						performRotation();
+			TreeNode* sibling = parent->getSibling();
+			cout << "test\n\n\n\n\n\n\n\n\n";
+			if(sibling != NULL){
+				if(sibling->getColor()){//if true then black
+					performRotation(current);
+				}else{
+					if(parent->getParent() != NULL){//swaps with parnet
+						bool tColor = parent->getColor();
+						parent->setColor((parent->getParent())->getColor());
+						(parent->getParent())->setColor(tColor);
 					}else{
-						if(parent->getParent() != NULL){//swaps with parnet
-							bool tColor = parent->isBlack();
-							parent->setColor((parent->getParent())->isBlack());
-							(parent->getParent())->setColor(tColor);
-						}else{
-							cout << "ERROR: GrandParent is NULL\nupdateTreeColors\n";
-							exit(007);//heh
-						}
+						cout << "ERROR: GrandParent is NULL\nupdateTreeColors\n";
+						exit(007);//heh
 					}
-				}else{//this represents empty BLACK leaf, NULLs are black
-					performRotation();
 				}
-			}else{
-				cout << "ERROR: Parent is NULL\nupdateTreeColors\n";
-				exit(1337);//L E E T
+			}else{//this represents empty BLACK leaf, NULLs are black
+				performRotation(current);
 			}
+			
+			
+		}
+		
+		if(current->getLeft() != NULL){//runs its children
+			current = current->getLeft();
+			updateTreeColors(head, current, updated);
+			current = current->getParent();
+		}
+		
+		if(current->getRight() != NULL){
+			current = current->getRight();
+			updateTreeColors(head, current, updated);
 		}
 	}else{
 		cout << "ERROR: Tree is NULL\nupdateTreeColors\n";
 		exit(212);//boiling hot!
 	}
+	
+	
 }
 
-void performRotation(){
+void performRotation(TreeNode* current){
+	if(current->getParent() != NULL){
+		if(current->isLeft()){//rotates right, never rotates the root(i think)
+			TreeNode* p = current->getParent();
+			TreeNode* gp = p->getParent();
+			TreeNode* r = current->getRight();
+			if(gp != NULL){
+				if(p->getLeft()){
+					gp->setLeft(current);
+				}else{
+					gp->setRight(current);
+				}
+			}
+			
+			current->setParent(gp);//if null sets to null
+			current->setRight(p);
+			p->setLeft(r);
+			p->setParent(current);
+			if(r != NULL){
+				r->setParent(p);
+			}
+			
+		}else{//rotates left
+			TreeNode* p = current->getParent();
+			TreeNode* gp = p->getParent();
+			TreeNode* l = current->getRight();
+			
+			if(gp != NULL){
+				if(p->getLeft()){
+					gp->setLeft(current);
+				}else{
+					gp->setRight(current);
+				}
+			}
+			
+			current->setParent(gp);//if null sets to null
+			current->setLeft(p);
+			p->setRight(l);
+			p->setParent(current);
+			if(l != NULL){
+				l->setParent(p);
+			}
+		}
+	}
 	
 }
 
@@ -99,9 +155,21 @@ void createRedBlackTree(char** seperatedInput){
 		TreeNode* newNode = new TreeNode(NULL, seperatedInput[count]);
 		TreeNode* current = head;
 		addNumberToTree(head, newNode, current);//default color is red
-		current = head;
-		updateTreeColors(head, current);
+
 		count++;
+	}
+	if(true){
+		TreeNode* current = head;
+		bool updated = true;
+		while(updated){
+			updated = false;
+			updateTreeColors(head, current, updated);
+			
+			if(updated == false){//check one last time, for fixing root and whatnot
+				updateTreeColors(head, current, updated);
+			}
+			
+		}//runs until nothing is updated
 	}
 	
 	
@@ -120,7 +188,11 @@ void createRedBlackTree(char** seperatedInput){
 			bool numFound = false;
 			searchAndDelete(head, input, numFound);
 			TreeNode* current = head;
-			updateTreeColors(head, current);
+			bool updated = true;
+			while(updated){
+				updated = false;
+				updateTreeColors(head, current, updated);
+			}//runs until nothing is updated
 			
 			cout << endl;
 			visualizeTreeUntilMaxDepth(head);
@@ -249,15 +321,16 @@ void visualizeTreeUntilMaxDepth(TreeNode* head){
 		
 		if(depthProgression == 1){
 			cout << currentDepth << ": ";
+			
 		}
 		if(tCurrent != NULL){
-			if(tCurrent->isBlack()){
-				cout << tCurrent->getChar()<< "B" << " || ";
+			if(tCurrent->getColor()){
+				cout << tCurrent->getChar()<< "B" << ".";
 			}else{
-				cout << tCurrent->getChar()<< "R" << " || ";
+				cout << tCurrent->getChar()<< "R" << ".";
 			}
 		}else{
-			cout << " || ";
+			cout << ".";
 		}
 		
 		if(nullCounter == pow(2, currentDepth)){
@@ -311,4 +384,117 @@ void searchAndDelete(TreeNode* current, char* input, bool& numberFound){
 	}
 	
 }
+
+int convertCharPointerToInt(char* c){
+	int count = 1;
+
+	int newNum = convertCharToInt(c[0]);
+
+	while(c[count] != '\0'){
+		
+		newNum = (newNum * 10) + convertCharToInt(c[count]);
+		count++;
+		
+	}
 	
+	return newNum;
+}
+	
+	
+void addNumberToTree(TreeNode* head, TreeNode* newNode, TreeNode* current){
+	if(current != NULL){
+		
+		
+		int newNum = convertCharPointerToInt(newNode->getChar());
+		int currentNum = convertCharPointerToInt(current->getChar());
+		
+		if(newNum >= currentNum){
+			if(current->getRight() != NULL){
+				
+				current = current->getRight();
+				addNumberToTree(head, newNode, current);
+				
+			}else{
+				
+				current->setRight(newNode);
+				newNode->setParent(current);
+			}
+			
+		}else{
+			if(current->getLeft() != NULL){
+				
+				current = current->getLeft();
+				addNumberToTree(head, newNode, current);
+				
+			}else{
+				
+				current->setLeft(newNode);
+				newNode->setParent(current);
+				
+			}
+		}
+		
+	}else{
+		cout << "Current is NULL" << endl;
+	}
+		
+	
+}
+	
+char* directionsToBalancedNode(int currentDepth, int depthProgression, char*& directions){//this gives directions to next balanced node in the heap
+	directions = new char[currentDepth + 1];
+	
+	for(int x  = currentDepth; x > 0; x--){//builds upwards from the designated location
+		if(depthProgression % 2 ==  0){
+			directions[x - 1] = 'R';
+		}else{
+			directions[x - 1] = 'L';
+		}
+		int newProgression = 1;
+		int tProgression =  depthProgression;// 2
+		bool running = true;
+		
+		while(running){
+			tProgression =  tProgression -2;
+			if(tProgression > 0){
+				//cout << tProgression << "TProg"<< endl;
+				newProgression++;
+			}else{
+				//cout << newProgression << endl;
+				running = false;
+			}
+		}
+		depthProgression = newProgression;
+	}
+	directions[currentDepth] = '\0';
+	
+	return directions;
+}
+	
+int convertCharToInt(char c){
+	//cout << c;
+	if(c == '0'){
+		return 0;
+	}else if(c == '1'){
+		return 1;
+	}else if(c == '2'){
+		return 2;
+	}else if(c == '3'){
+		return 3;
+	}else if(c == '4'){
+		return 4;
+	}else if(c == '5'){
+		return 5;
+	}else if(c == '6'){
+		return 6;
+	}else if(c == '7'){
+		return 7;
+	}else if(c == '8'){
+		return 8;
+	}else if(c == '9'){
+		return 9;
+	}
+	
+	//cout << "error";
+	return NULL;
+}

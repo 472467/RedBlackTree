@@ -4,7 +4,7 @@
 TreeNode::TreeNode(TreeNode* p, char* n){
 	c = n;
 	parent = p;
-	isBlack = true;
+	isBlack = false;
 	left = NULL;
 	right = NULL;
 	id = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/10000000000));//for differentiating which nodes are which, checking by memory locations doesnt work
@@ -63,7 +63,8 @@ TreeNode::~TreeNode(){
 	delete c;
 }
 
-TreeNode::getSibling(TreeNode* current){
+TreeNode* TreeNode::getSibling(){
+	TreeNode* current = this;
 	if(current->getParent() != NULL){
 		TreeNode* parent = current->getParent();
 		if(parent->getLeft() != NULL && parent->getRight() != NULL){//which is which!!
@@ -78,9 +79,17 @@ TreeNode::getSibling(TreeNode* current){
 	}
 }
 
-int TreeNode::isLeftOrRight(TreeNode* current){
+bool TreeNode::isLeft(){//returns true if left false if right
+	TreeNode* current = this;
 	if(current->getParent() != NULL){
-		
+		TreeNode* p = current->getParent();
+		if((p->getLeft()) == NULL){//left is NULL(meaning its right
+			return false;
+		}else if(this->getID() == (p->getLeft())->getID()){//is the left
+			return true;
+		}else{//right is null or not the same ID
+			return false;
+		}
 	}
 }
 
@@ -116,7 +125,7 @@ void TreeNode::setColor(bool black){//true is black, false is red
 	isBlack = black;
 }
 
-bool TreeNode::isBlack(){//true is black, false is red
+bool TreeNode::getColor(){//true is black, false is red
 	return isBlack;
 }
 
