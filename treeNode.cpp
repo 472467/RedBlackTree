@@ -83,7 +83,7 @@ bool TreeNode::isLeft(){//returns true if left false if right
 	TreeNode* current = this;
 	if(current->getParent() != NULL){
 		TreeNode* p = current->getParent();
-		if((p->getLeft()) == NULL){//left is NULL(meaning its right
+		if((p->getLeft()) == NULL){//parent's left is NULL(meaning its right
 			return false;
 		}else if(this->getID() == (p->getLeft())->getID()){//is the left
 			return true;
@@ -218,6 +218,11 @@ void TreeNode::safeDelete(){//removes references to this and relocates current c
 float TreeNode::getID(){
 	return id;
 }
+
+void TreeNode::setID(float id2){
+	id = id2;
+}
+
 
 int TreeNode::convertCharPointerToInt2(char* c){
 	int count = 1;

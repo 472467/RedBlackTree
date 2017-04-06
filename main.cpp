@@ -61,7 +61,6 @@ void updateTreeColors(TreeNode* head, TreeNode* current, bool& updated){
 			updated = true;
 			TreeNode* parent = current->getParent();//parent should NEVER be null here
 			TreeNode* sibling = parent->getSibling();
-			cout << "test\n\n\n\n\n\n\n\n\n";
 			if(sibling != NULL){
 				if(sibling->getColor()){//if true then black
 					performRotation(current);
@@ -70,6 +69,8 @@ void updateTreeColors(TreeNode* head, TreeNode* current, bool& updated){
 						bool tColor = parent->getColor();
 						parent->setColor((parent->getParent())->getColor());
 						(parent->getParent())->setColor(tColor);
+						
+						
 					}else{
 						cout << "ERROR: GrandParent is NULL\nupdateTreeColors\n";
 						exit(007);//heh
@@ -82,16 +83,11 @@ void updateTreeColors(TreeNode* head, TreeNode* current, bool& updated){
 			
 		}
 		
-		if(current->getLeft() != NULL){//runs its children
-			current = current->getLeft();
-			updateTreeColors(head, current, updated);
+		if(current->getParent() != NULL){//runs its children
 			current = current->getParent();
+			updateTreeColors(head, current, updated);
 		}
 		
-		if(current->getRight() != NULL){
-			current = current->getRight();
-			updateTreeColors(head, current, updated);
-		}
 	}else{
 		cout << "ERROR: Tree is NULL\nupdateTreeColors\n";
 		exit(212);//boiling hot!
@@ -103,45 +99,95 @@ void updateTreeColors(TreeNode* head, TreeNode* current, bool& updated){
 void performRotation(TreeNode* current){
 	if(current->getParent() != NULL){
 		if(current->isLeft()){//rotates right, never rotates the root(i think)
+			cout << "right rotation on " << current->getChar() << "\n";
+		
 			TreeNode* p = current->getParent();
 			TreeNode* gp = p->getParent();
 			TreeNode* r = current->getRight();
 			if(gp != NULL){
-				if(p->getLeft()){
+				if(p->isLeft()){
 					gp->setLeft(current);
 				}else{
 					gp->setRight(current);
 				}
+				
+				current->setParent(gp);//if null sets to null
+				current->setRight(p);
+				p->setLeft(r);
+				p->setParent(current);
+				if(r != NULL){
+					r->setParent(p);
+				}
+			}else{//this means that we are swapping with the rootNode
+				
+				char* currentData = current->getChar();
+				float currentID = current->getID();
+				
+				current->setChar(p->getChar());
+				current->setID(p->getID());
+				p->setChar(currentData);
+				p->setID(currentID);//root and current swapped
+				
+				r = p->getRight();//need to swap left and right of parent(now the current)
+				p->setRight(current);
+				p->setLeft(current->getLeft());
+				if(current->getLeft() != NULL){
+					(current->getLeft())->setParent(current);
+				}
+				current->setLeft(current->getRight());
+				current->setRight(r);
+				if(r != NULL){
+					r->setParent(current);
+				}
+				
 			}
 			
-			current->setParent(gp);//if null sets to null
-			current->setRight(p);
-			p->setLeft(r);
-			p->setParent(current);
-			if(r != NULL){
-				r->setParent(p);
-			}
+			
 			
 		}else{//rotates left
+		
+			cout << "left rotation on " << current->getChar() << "\n";
 			TreeNode* p = current->getParent();
 			TreeNode* gp = p->getParent();
-			TreeNode* l = current->getRight();
+			TreeNode* l = current->getLeft();
 			
 			if(gp != NULL){
-				if(p->getLeft()){
+				if(p->isLeft()){
 					gp->setLeft(current);
 				}else{
 					gp->setRight(current);
 				}
+				
+				current->setParent(gp);//if null sets to null
+				current->setLeft(p);
+				p->setRight(l);
+				p->setParent(current);
+				if(l != NULL){
+					l->setParent(p);
+				}
+			}else{//swapping with root
+				char* currentData = current->getChar();
+				float currentID = current->getID();
+				
+				current->setChar(p->getChar());
+				current->setID(p->getID());
+				p->setChar(currentData);
+				p->setID(currentID);//root and current swapped
+				
+				l = p->getLeft();//need to swap left and right of parent(now the current)
+				p->setLeft(current);
+				p->setRight(current->getRight());
+				if(current->getRight() != NULL){
+					(current->getRight())->setParent(current);
+				}
+				current->setRight(current->getLeft());
+				current->setLeft(l);
+				if(l != NULL){
+					l->setParent(current);
+				}
 			}
 			
-			current->setParent(gp);//if null sets to null
-			current->setLeft(p);
-			p->setRight(l);
-			p->setParent(current);
-			if(l != NULL){
-				l->setParent(p);
-			}
+			
 		}
 	}
 	
@@ -152,28 +198,25 @@ void createRedBlackTree(char** seperatedInput){
 	int count = 1;//skips 0 since that is the root of tree
 	
 	while(strcmp(seperatedInput[count], "null") != 0){
-		TreeNode* newNode = new TreeNode(NULL, seperatedInput[count]);
+		TreeNode* newNode;
+		if(count == 1){
+			newNode = new TreeNode(NULL, seperatedInput[count]), true;
+		}else{
+			newNode = new TreeNode(NULL, seperatedInput[count]);
+		}
+		
 		TreeNode* current = head;
 		addNumberToTree(head, newNode, current);//default color is red
-
+		bool updated = false;
+		if(newNode->getParent() == NULL){
+			newNode->setColor(true);
+		}
+		visualizeTreeUntilMaxDepth(head);
+		updateTreeColors(head, newNode, updated);	
+		
 		count++;
 	}
-	if(true){
-		TreeNode* current = head;
-		bool updated = true;
-		while(updated){
-			updated = false;
-			updateTreeColors(head, current, updated);
-			
-			if(updated == false){//check one last time, for fixing root and whatnot
-				updateTreeColors(head, current, updated);
-			}
-			
-		}//runs until nothing is updated
-	}
 	
-	
-	visualizeTreeUntilMaxDepth(head);
 	
 	cout << "would you like to delete numbers? (1 = yes, 2 = no) \n";
 	char* input = new char[2];
@@ -325,9 +368,9 @@ void visualizeTreeUntilMaxDepth(TreeNode* head){
 		}
 		if(tCurrent != NULL){
 			if(tCurrent->getColor()){
-				cout << tCurrent->getChar()<< "B" << ".";
+				cout << tCurrent->getChar()<< "B" << "";
 			}else{
-				cout << tCurrent->getChar()<< "R" << ".";
+				cout << tCurrent->getChar()<< "R" << "";
 			}
 		}else{
 			cout << ".";
