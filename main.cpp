@@ -63,11 +63,13 @@ void updateTreeColors(TreeNode* head, TreeNode* current, bool& updated){
 			TreeNode* sibling = parent->getSibling();
 			if(sibling != NULL){
 				if(sibling->getColor()){//if true then black
+					current = current->getParent();
 					performRotation(current);
 				}else{
 					if(parent->getParent() != NULL){//swaps with parnet
 						bool tColor = parent->getColor();
 						parent->setColor((parent->getParent())->getColor());
+						sibling->setColor((parent->getParent())->getColor());
 						(parent->getParent())->setColor(tColor);
 						
 						
@@ -77,6 +79,7 @@ void updateTreeColors(TreeNode* head, TreeNode* current, bool& updated){
 					}
 				}
 			}else{//this represents empty BLACK leaf, NULLs are black
+				current = current->getParent();
 				performRotation(current);
 			}
 			
@@ -194,16 +197,11 @@ void performRotation(TreeNode* current){
 }
 
 void createRedBlackTree(char** seperatedInput){
-	TreeNode* head = new TreeNode(NULL, seperatedInput[0]);
+	TreeNode* head = new TreeNode(NULL, seperatedInput[0], true);
 	int count = 1;//skips 0 since that is the root of tree
 	
 	while(strcmp(seperatedInput[count], "null") != 0){
-		TreeNode* newNode;
-		if(count == 1){
-			newNode = new TreeNode(NULL, seperatedInput[count]), true;
-		}else{
-			newNode = new TreeNode(NULL, seperatedInput[count]);
-		}
+		TreeNode* newNode = new TreeNode(NULL, seperatedInput[count]);
 		
 		TreeNode* current = head;
 		addNumberToTree(head, newNode, current);//default color is red

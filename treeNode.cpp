@@ -22,6 +22,7 @@ TreeNode::TreeNode(TreeNode* p, TreeNode* l, char* n){
 }
 
 TreeNode::TreeNode(TreeNode* p, TreeNode* l, TreeNode* r, char* n){
+	
 	c = n;
 	parent = p;
 	isBlack = false;
@@ -30,10 +31,10 @@ TreeNode::TreeNode(TreeNode* p, TreeNode* l, TreeNode* r, char* n){
 	id = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/10000000000));
 }
 
-TreeNode::TreeNode(TreeNode* p, char* n, bool c){//SETS COLOR
+TreeNode::TreeNode(TreeNode* p, char* n, bool col){//SETS COLOR
 	c = n;
 	parent = p;
-	isBlack = c;
+	isBlack = col;
 	left = NULL;
 	right = NULL;
 	id = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/10000000000));//for differentiating which nodes are which, checking by memory locations doesnt work
@@ -41,19 +42,19 @@ TreeNode::TreeNode(TreeNode* p, char* n, bool c){//SETS COLOR
 	//having two inputs be the same id should be astronomically unlikely
 }
 
-TreeNode::TreeNode(TreeNode* p, TreeNode* l, char* n, bool c){//SETS COLOR
+TreeNode::TreeNode(TreeNode* p, TreeNode* l, char* n, bool col){//SETS COLOR
 	c = n;
 	parent = p;
-	isBlack = c;
+	isBlack = col;
 	left = l;
 	right = NULL;
 	id = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/10000000000));
 }
 
-TreeNode::TreeNode(TreeNode* p, TreeNode* l, TreeNode* r, char* n, bool c){//SETS COLOR
+TreeNode::TreeNode(TreeNode* p, TreeNode* l, TreeNode* r, char* n, bool col){//SETS COLOR
 	c = n;
 	parent = p;
-	isBlack = c;
+	isBlack = col;
 	left = l;
 	right = r;
 	id = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/10000000000));
