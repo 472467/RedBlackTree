@@ -12,13 +12,15 @@ void seperateInput(char*);
 void convertFileInput(char*);
 void visualizeTreeUntilMaxDepth(TreeNode* head);
 void searchAndDelete(TreeNode*, char*, bool&);
-void updateTreeColors(TreeNode*, TreeNode*, bool&);
+void updateTreeColors(TreeNode*&, TreeNode*, bool&);
 void separateInput(char*);
 void performRotation(TreeNode*);
 char* directionsToBalancedNode(int, int, char*&);
 int convertCharPointerToInt(char*);
 void addNumberToTree(TreeNode*, TreeNode*, TreeNode*);
 int convertCharToInt(char);
+void checkBottomMismatch(TreeNode*, TreeNode*);
+bool isStraightPath(TreeNode*);
 
 int main(){
 	cout << "dots in visualization represent empty locations\n";
@@ -26,7 +28,7 @@ int main(){
 	char* input = new char[2];
 	//cin.getline(input, 2);
 	
-	separateInput("2 1 7 5 3");
+	separateInput("11 2 4 6 9 4 1 3 30");
 	/*
 	if(input[0] == '2'){//textfile input
 		
@@ -47,7 +49,8 @@ int main(){
 	*/
 }
 
-void updateTreeColors(TreeNode* head, TreeNode* current, bool& updated){
+void updateTreeColors(TreeNode*& head, TreeNode* current, bool& updated){
+	bool rotated =false;
 	if(current != NULL){
 		visualizeTreeUntilMaxDepth(head);
 		if(current->getParent() == NULL){//at root of tree
@@ -63,8 +66,23 @@ void updateTreeColors(TreeNode* head, TreeNode* current, bool& updated){
 			TreeNode* sibling = parent->getSibling();
 			if(sibling != NULL){
 				if(sibling->getColor()){//if true then black
+					bool straightPath = isStraightPath(current);
 					current = current->getParent();
-					performRotation(current);
+					if(straightPath){
+						if((current->getParent())->getID() == head->getID()){
+							performRotation(current);
+							head = current;
+						}else{
+							performRotation(current);
+						}
+					}else{//only zigzag paths, must have GP
+						performRotation(current);
+						current->setColor((current->getParent())->getColor());
+						performRotation(current);
+						
+					}
+					rotated = true;
+					
 				}else{
 					if(parent->getParent() != NULL){//swaps with parnet
 						bool tColor = parent->getColor();
@@ -79,8 +97,26 @@ void updateTreeColors(TreeNode* head, TreeNode* current, bool& updated){
 					}
 				}
 			}else{//this represents empty BLACK leaf, NULLs are black
+				bool straightPath = isStraightPath(current);
 				current = current->getParent();
-				performRotation(current);
+				if(straightPath){
+					if((current->getParent())->getID() == head->getID()){
+						performRotation(current);
+						head = current;
+					}else{
+						performRotation(current);
+					}
+				}else{
+					if((current->getParent())->getID() == head->getID()){
+						performRotation(current);
+						performRotation(current);
+						head = current;
+					}else{
+						performRotation(current);
+						performRotation(current);
+					}
+				}
+				rotated = true;
 			}
 			
 			
@@ -89,63 +125,64 @@ void updateTreeColors(TreeNode* head, TreeNode* current, bool& updated){
 		if(current->getParent() != NULL){//runs its children
 			current = current->getParent();
 			updateTreeColors(head, current, updated);
+			
 		}
+		
+		
 		
 	}else{
 		cout << "ERROR: Tree is NULL\nupdateTreeColors\n";
 		exit(212);//boiling hot!
 	}
 	
+}
+
+bool isStraightPath(TreeNode* current){
+	TreeNode* p = current->getParent();
+	TreeNode* gp = p->getParent();
+	bool gpToP = p->isLeft();
+	bool pToCurrent = current->isLeft();
+	
+	if(gp == NULL){
+		return true;
+	}
+	
+	if(gpToP == pToCurrent){// both false or both true
+		return true;
+	}else{
+		return false;
+	}
 	
 }
 
 void performRotation(TreeNode* current){
 	if(current->getParent() != NULL){
+		bool tColor = current->getColor();
+		//current->setColor((current->getParent())->getColor());
+		//(current->getParent())->setColor(tColor);
+		
 		if(current->isLeft()){//rotates right, never rotates the root(i think)
 			cout << "right rotation on " << current->getChar() << "\n";
 		
 			TreeNode* p = current->getParent();
 			TreeNode* gp = p->getParent();
 			TreeNode* r = current->getRight();
+		
 			if(gp != NULL){
-				if(p->isLeft()){
-					gp->setLeft(current);
+				if(p->isLeft()){//gp 1/2
+					gp->setLeft(current);//gets wrong one!
 				}else{
 					gp->setRight(current);
 				}
-				
-				current->setParent(gp);//if null sets to null
-				current->setRight(p);
-				p->setLeft(r);
-				p->setParent(current);
-				if(r != NULL){
-					r->setParent(p);
-				}
-			}else{//this means that we are swapping with the rootNode
-				
-				char* currentData = current->getChar();
-				float currentID = current->getID();
-				
-				current->setChar(p->getChar());
-				current->setID(p->getID());
-				p->setChar(currentData);
-				p->setID(currentID);//root and current swapped
-				
-				r = p->getRight();//need to swap left and right of parent(now the current)
-				p->setRight(current);
-				p->setLeft(current->getLeft());
-				if(current->getLeft() != NULL){
-					(current->getLeft())->setParent(current);
-				}
-				current->setLeft(current->getRight());
-				current->setRight(r);
-				if(r != NULL){
-					r->setParent(current);
-				}
-				
 			}
 			
-			
+			current->setParent(gp);//gp 2/2
+			current->setRight(p);//p 1/2
+			p->setLeft(r);
+			p->setParent(current);
+			if(r != NULL){
+				r->setParent(p);
+			}
 			
 		}else{//rotates left
 		
@@ -160,40 +197,43 @@ void performRotation(TreeNode* current){
 				}else{
 					gp->setRight(current);
 				}
-				
-				current->setParent(gp);//if null sets to null
-				current->setLeft(p);
-				p->setRight(l);
-				p->setParent(current);
-				if(l != NULL){
-					l->setParent(p);
-				}
-			}else{//swapping with root
-				char* currentData = current->getChar();
-				float currentID = current->getID();
-				
-				current->setChar(p->getChar());
-				current->setID(p->getID());
-				p->setChar(currentData);
-				p->setID(currentID);//root and current swapped
-				
-				l = p->getLeft();//need to swap left and right of parent(now the current)
-				p->setLeft(current);
-				p->setRight(current->getRight());
-				if(current->getRight() != NULL){
-					(current->getRight())->setParent(current);
-				}
-				current->setRight(current->getLeft());
-				current->setLeft(l);
-				if(l != NULL){
-					l->setParent(current);
-				}
 			}
 			
+			current->setParent(gp);//if null sets to null
+			current->setLeft(p);
+			p->setRight(l);
+			p->setParent(current);
+			if(l != NULL){
+				l->setParent(p);
+			}
 			
 		}
 	}
+}
 	
+
+
+void checkBottomMismatch(TreeNode* head, TreeNode* current){
+	bool outdatedInput = false;
+	if(current != NULL){
+		if(current->getLeft() != NULL){
+			TreeNode* tCurrent = current;
+			current = current->getLeft();
+			checkBottomMismatch(head, current);
+			current = tCurrent;
+		}
+		
+		if(current->getRight() != NULL){
+			TreeNode* tCurrent = current;
+			current = current->getRight();
+			checkBottomMismatch(head, current);
+			current = tCurrent;
+		}
+		
+		if(current->getRight() == NULL && current->getLeft() == NULL){
+			updateTreeColors(head, current, outdatedInput);
+		}
+	}
 }
 
 void createRedBlackTree(char** seperatedInput){
@@ -201,6 +241,7 @@ void createRedBlackTree(char** seperatedInput){
 	int count = 1;//skips 0 since that is the root of tree
 	
 	while(strcmp(seperatedInput[count], "null") != 0){
+		cout << "RUN ==== " << count << endl;
 		TreeNode* newNode = new TreeNode(NULL, seperatedInput[count]);
 		
 		TreeNode* current = head;
@@ -210,8 +251,9 @@ void createRedBlackTree(char** seperatedInput){
 			newNode->setColor(true);
 		}
 		visualizeTreeUntilMaxDepth(head);
-		updateTreeColors(head, newNode, updated);	
-		
+		updateTreeColors(head, newNode, updated);
+		updateTreeColors(head, newNode, updated);
+		//checkBottomMismatch(head, current);
 		count++;
 	}
 	
@@ -370,6 +412,7 @@ void visualizeTreeUntilMaxDepth(TreeNode* head){
 			}else{
 				cout << tCurrent->getChar()<< "R" << "";
 			}
+			//cout << " " <<tCurrent->getID() <<  "|";
 		}else{
 			cout << ".";
 		}

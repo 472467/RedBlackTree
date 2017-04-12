@@ -7,7 +7,7 @@ TreeNode::TreeNode(TreeNode* p, char* n){
 	isBlack = false;
 	left = NULL;
 	right = NULL;
-	id = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/10000000000));//for differentiating which nodes are which, checking by memory locations doesnt work
+	id = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/100000));//for differentiating which nodes are which, checking by memory locations doesnt work
 	//checkng by value doesn't work since there can be duplicates
 	//having two inputs be the same id should be astronomically unlikely
 }
@@ -18,7 +18,7 @@ TreeNode::TreeNode(TreeNode* p, TreeNode* l, char* n){
 	isBlack = false;
 	left = l;
 	right = NULL;
-	id = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/10000000000));
+	id = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/100000));
 }
 
 TreeNode::TreeNode(TreeNode* p, TreeNode* l, TreeNode* r, char* n){
@@ -28,7 +28,7 @@ TreeNode::TreeNode(TreeNode* p, TreeNode* l, TreeNode* r, char* n){
 	isBlack = false;
 	left = l;
 	right = r;
-	id = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/10000000000));
+	id = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/100000));
 }
 
 TreeNode::TreeNode(TreeNode* p, char* n, bool col){//SETS COLOR
@@ -37,7 +37,7 @@ TreeNode::TreeNode(TreeNode* p, char* n, bool col){//SETS COLOR
 	isBlack = col;
 	left = NULL;
 	right = NULL;
-	id = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/10000000000));//for differentiating which nodes are which, checking by memory locations doesnt work
+	id = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/100000));//for differentiating which nodes are which, checking by memory locations doesnt work
 	//checkng by value doesn't work since there can be duplicates
 	//having two inputs be the same id should be astronomically unlikely
 }
@@ -48,7 +48,7 @@ TreeNode::TreeNode(TreeNode* p, TreeNode* l, char* n, bool col){//SETS COLOR
 	isBlack = col;
 	left = l;
 	right = NULL;
-	id = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/10000000000));
+	id = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/100000));
 }
 
 TreeNode::TreeNode(TreeNode* p, TreeNode* l, TreeNode* r, char* n, bool col){//SETS COLOR
@@ -57,7 +57,7 @@ TreeNode::TreeNode(TreeNode* p, TreeNode* l, TreeNode* r, char* n, bool col){//S
 	isBlack = col;
 	left = l;
 	right = r;
-	id = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/10000000000));
+	id = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/100000));
 }
 
 TreeNode::~TreeNode(){
@@ -87,6 +87,7 @@ bool TreeNode::isLeft(){//returns true if left false if right
 		if((p->getLeft()) == NULL){//parent's left is NULL(meaning its right
 			return false;
 		}else if(this->getID() == (p->getLeft())->getID()){//is the left
+			std::cout << this->getID() << " " <<(p->getLeft())->getID() << "\n";
 			return true;
 		}else{//right is null or not the same ID
 			return false;
