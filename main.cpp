@@ -67,18 +67,32 @@ void updateTreeColors(TreeNode*& head, TreeNode* current, bool& updated){
 			if(sibling != NULL){
 				if(sibling->getColor()){//if true then black
 					bool straightPath = isStraightPath(current);
-					current = current->getParent();
+					
 					if(straightPath){
 						if((current->getParent())->getID() == head->getID()){
+							current = current->getParent();
 							performRotation(current);
+							visualizeTreeUntilMaxDepth(head);
 							head = current;
+
 						}else{
+							current = current->getParent();
 							performRotation(current);
+							visualizeTreeUntilMaxDepth(head);
 						}
 					}else{//only zigzag paths, must have GP
+					
 						performRotation(current);
+						bool tColor = current->getColor();
 						current->setColor((current->getParent())->getColor());
+						(current->getParent())->setColor(tColor);
+						visualizeTreeUntilMaxDepth(head);
+						cout << "Double ";
 						performRotation(current);
+						visualizeTreeUntilMaxDepth(head);
+						if(head->getParent() != NULL){
+							head = head->getParent();
+						}
 						
 					}
 					rotated = true;
@@ -98,22 +112,50 @@ void updateTreeColors(TreeNode*& head, TreeNode* current, bool& updated){
 				}
 			}else{//this represents empty BLACK leaf, NULLs are black
 				bool straightPath = isStraightPath(current);
-				current = current->getParent();
+				
 				if(straightPath){
 					if((current->getParent())->getID() == head->getID()){
+						current = current->getParent();
 						performRotation(current);
 						head = current;
+						
+						
 					}else{
+						current = current->getParent();
 						performRotation(current);
 					}
 				}else{
 					if((current->getParent())->getID() == head->getID()){
 						performRotation(current);
+						
+						bool tColor = current->getColor();
+						current->setColor((current->getParent())->getColor());
+						(current->getParent())->setColor(tColor);
+						
+						visualizeTreeUntilMaxDepth(head);
+						cout << "Double ";
 						performRotation(current);
 						head = current;
+						visualizeTreeUntilMaxDepth(head);
+						if(head->getParent() != NULL){
+							head = head->getParent();
+						}
+						
 					}else{
+						
 						performRotation(current);
+						visualizeTreeUntilMaxDepth(head);
+						cout << "Double ";
+						
+						bool tColor = current->getColor();
+						current->setColor((current->getParent())->getColor());
+						(current->getParent())->setColor(tColor);
+						
 						performRotation(current);
+						if(head->getParent() != NULL){
+							head = head->getParent();
+						}
+						visualizeTreeUntilMaxDepth(head);
 					}
 				}
 				rotated = true;
@@ -208,6 +250,8 @@ void performRotation(TreeNode* current){
 			}
 			
 		}
+		
+		
 	}
 }
 	
@@ -438,27 +482,29 @@ void visualizeTreeUntilMaxDepth(TreeNode* head){
 void searchAndDelete(TreeNode* current, char* input, bool& numberFound){
 	if(current != NULL){
 		int newNum = convertCharPointerToInt(input);
+		//cout <<"\n\n" <<newNum << "\n\n";
 		int currentNum = convertCharPointerToInt(current->getChar());
-		
+		cout <<"\n" <<currentNum << "\n";
 		if(newNum == currentNum){
 			if(!numberFound){
 				numberFound = true;
 				current->safeDelete();
+				cout << "NUMBER FOUnd";
 			}
 			
 		}else{
-			if(current->getLeft() != NULL){
-				
-				current = current->getLeft();
-				searchAndDelete(current, input, numberFound);
-				
-			}
-			
-			if(current->getRight() != NULL){
-				
-				current = current->getRight();
-				searchAndDelete(current, input, numberFound);
-				
+			if(newNum >= currentNum){
+				if(current->getLeft() != NULL){
+					current = current->getLeft();
+					searchAndDelete(current, input, numberFound);
+				}
+			}else{
+				if(current->getRight() != NULL){
+					cout << "NULL\n\n\n\n\n\n";
+					current = current->getRight();
+					searchAndDelete(current, input, numberFound);
+					
+				}
 			}
 			
 		}

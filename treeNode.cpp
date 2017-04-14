@@ -122,6 +122,15 @@ TreeNode* TreeNode::getRight(){
 void TreeNode::setRight(TreeNode* r){
 	right = r;
 }
+TreeNode* TreeNode::getHead(TreeNode* current){
+	if(current->getParent() != NULL){
+		current = current->getParent();
+		return getHead(current);
+	}else{
+		return getHead(current);
+	}
+	
+}
 
 void TreeNode::setColor(bool black){//true is black, false is red
 	isBlack = black;
