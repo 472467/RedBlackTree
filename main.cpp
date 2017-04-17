@@ -24,29 +24,30 @@ bool isStraightPath(TreeNode*);
 
 int main(){
 	cout << "dots in visualization represent empty locations\n";
-	cout << "Would you like to input an a bunch of numbers or a textfile (1 = numbers, 2 = textfile):\n";
-	char* input = new char[2];
-	//cin.getline(input, 2);
 	
-	separateInput("11 2 4 6 9 4 1 3 30");
-	/*
-	if(input[0] == '2'){//textfile input
+	//convertFileInput("numbers.txt");
+	//separateInput("9 4 1 3 30 3 18 11 2 4 6 2 5 6");
+	
+	
+	if(false){//input[0] == '2'){//textfile input
 		
 		cout << "Input file name:\n";
 		input = new char[100];
-		cin.getline(input, 100);
+		cin.getline(input, 100);//NO COMMENTS REQUIRED DURING THE TIME OF SUBMISSION
 		
 		convertFileInput(input);
 
 	}else{//manual input
 		
-		cout << "Input a bunch of numbers you would like to be in the tree(seperate with single space), will be added one after another:\n";
+		cout << "Input a bunch of numbers you would like to be in the tree(separate with single space), will be added one after another:\n";
 		input = new char[1000];
 		cin.getline(input, 1000);
 		
 		separateInput(input);
 	}
-	*/
+	
+	
+	
 }
 
 void updateTreeColors(TreeNode*& head, TreeNode* current, bool& updated){
@@ -71,12 +72,19 @@ void updateTreeColors(TreeNode*& head, TreeNode* current, bool& updated){
 					if(straightPath){
 						if((current->getParent())->getID() == head->getID()){
 							current = current->getParent();
+							
 							performRotation(current);
 							visualizeTreeUntilMaxDepth(head);
 							head = current;
 
 						}else{
 							current = current->getParent();
+							if(current->getParent() != NULL){
+								bool tColor = current->getColor();
+								current->setColor((current->getParent())->getColor());
+								(current->getParent())->setColor(tColor);
+								
+							}
 							performRotation(current);
 							visualizeTreeUntilMaxDepth(head);
 						}
@@ -116,12 +124,19 @@ void updateTreeColors(TreeNode*& head, TreeNode* current, bool& updated){
 				if(straightPath){
 					if((current->getParent())->getID() == head->getID()){
 						current = current->getParent();
+						
 						performRotation(current);
 						head = current;
 						
 						
 					}else{
 						current = current->getParent();
+						if(current->getParent() != NULL){
+							bool tColor = current->getColor();
+							current->setColor((current->getParent())->getColor());
+							(current->getParent())->setColor(tColor);
+							
+						}
 						performRotation(current);
 					}
 				}else{
@@ -163,7 +178,9 @@ void updateTreeColors(TreeNode*& head, TreeNode* current, bool& updated){
 			
 			
 		}
-		
+		if(head->getParent() != NULL){
+			head = head->getParent();
+		}
 		if(current->getParent() != NULL){//runs its children
 			current = current->getParent();
 			updateTreeColors(head, current, updated);
@@ -382,7 +399,7 @@ void separateInput(char* input){
 }
 
 void convertFileInput(char* f){
-	char* input = new char[10000];
+	char* input = new char[100000];
 	
 	int count = 0;
 	ifstream fin(f);
@@ -482,26 +499,23 @@ void visualizeTreeUntilMaxDepth(TreeNode* head){
 void searchAndDelete(TreeNode* current, char* input, bool& numberFound){
 	if(current != NULL){
 		int newNum = convertCharPointerToInt(input);
-		//cout <<"\n\n" <<newNum << "\n\n";
 		int currentNum = convertCharPointerToInt(current->getChar());
-		cout <<"\n" <<currentNum << "\n";
+		
 		if(newNum == currentNum){
 			if(!numberFound){
 				numberFound = true;
 				current->safeDelete();
-				cout << "NUMBER FOUnd";
 			}
 			
 		}else{
 			if(newNum >= currentNum){
-				if(current->getLeft() != NULL){
-					current = current->getLeft();
+				if(current->getRight() != NULL){
+					current = current->getRight();
 					searchAndDelete(current, input, numberFound);
 				}
 			}else{
-				if(current->getRight() != NULL){
-					cout << "NULL\n\n\n\n\n\n";
-					current = current->getRight();
+				if(current->getLeft() != NULL){
+					current = current->getLeft();
 					searchAndDelete(current, input, numberFound);
 					
 				}

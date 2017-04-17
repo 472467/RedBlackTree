@@ -87,7 +87,7 @@ bool TreeNode::isLeft(){//returns true if left false if right
 		if((p->getLeft()) == NULL){//parent's left is NULL(meaning its right
 			return false;
 		}else if(this->getID() == (p->getLeft())->getID()){//is the left
-			std::cout << this->getID() << " " <<(p->getLeft())->getID() << "\n";
+			//std::cout << this->getID() << " " <<(p->getLeft())->getID() << "\n";
 			return true;
 		}else{//right is null or not the same ID
 			return false;
