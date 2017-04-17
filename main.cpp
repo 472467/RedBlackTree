@@ -24,12 +24,11 @@ bool isStraightPath(TreeNode*);
 
 int main(){
 	cout << "dots in visualization represent empty locations\n";
-	
-	//convertFileInput("numbers.txt");
-	//separateInput("9 4 1 3 30 3 18 11 2 4 6 2 5 6");
-	
-	
-	if(false){//input[0] == '2'){//textfile input
+	cout << "Would you like to input an a bunch of numbers or a textfile (1 = numbers, 2 = textfile):\n";
+	char* input = new char[2];
+	cin.getline(input, 2);
+
+	if(input[0] == '2'){//textfile input, DOESN't WORKS
 		
 		cout << "Input file name:\n";
 		input = new char[100];
@@ -37,7 +36,7 @@ int main(){
 		
 		convertFileInput(input);
 
-	}else{//manual input
+	}else{//manual input, WORKS
 		
 		cout << "Input a bunch of numbers you would like to be in the tree(separate with single space), will be added one after another:\n";
 		input = new char[1000];
@@ -53,7 +52,6 @@ int main(){
 void updateTreeColors(TreeNode*& head, TreeNode* current, bool& updated){
 	bool rotated =false;
 	if(current != NULL){
-		visualizeTreeUntilMaxDepth(head);
 		if(current->getParent() == NULL){//at root of tree
 			
 			if(current->getColor() != true){//assures root is black
@@ -300,7 +298,7 @@ void checkBottomMismatch(TreeNode* head, TreeNode* current){
 void createRedBlackTree(char** seperatedInput){
 	TreeNode* head = new TreeNode(NULL, seperatedInput[0], true);
 	int count = 1;//skips 0 since that is the root of tree
-	
+	visualizeTreeUntilMaxDepth(head);
 	while(strcmp(seperatedInput[count], "null") != 0){
 		cout << "RUN ==== " << count << endl;
 		TreeNode* newNode = new TreeNode(NULL, seperatedInput[count]);
@@ -311,9 +309,9 @@ void createRedBlackTree(char** seperatedInput){
 		if(newNode->getParent() == NULL){
 			newNode->setColor(true);
 		}
+		updateTreeColors(head, newNode, updated);
+		updateTreeColors(head, newNode, updated);
 		visualizeTreeUntilMaxDepth(head);
-		updateTreeColors(head, newNode, updated);
-		updateTreeColors(head, newNode, updated);
 		//checkBottomMismatch(head, current);
 		count++;
 	}
@@ -399,14 +397,14 @@ void separateInput(char* input){
 }
 
 void convertFileInput(char* f){
-	char* input = new char[100000];
+	char* input = new char[10000];
 	
 	int count = 0;
 	ifstream fin(f);
 	
 	if(fin.is_open()){//THIS CONVERTS INPUT TO A LONG ASS INT ARRAY
 
-		cout << "File Opened successfully!!!. Reading data from file into array" << endl;
+		cout << "File Opened successfully!!! Reading data from file into array." << endl;
 		
 		while(!fin.eof()){
 			char c;
@@ -416,7 +414,7 @@ void convertFileInput(char* f){
 			count++;
 		}
 		
-		input[count + 1] = '\0';
+		input[count - 1] = '\0';
 		cout << input << endl; 
 		separateInput(input);//calls seperate input here
 		
