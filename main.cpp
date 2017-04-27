@@ -12,6 +12,7 @@ void seperateInput(char*);
 void convertFileInput(char*);
 void visualizeTreeUntilMaxDepth(TreeNode* head);
 void searchAndDelete(TreeNode*, char*, bool&);
+void searchTree(TreeNode*, char*, bool&);
 void updateTreeColors(TreeNode*&, TreeNode*, bool&);
 void separateInput(char*);
 void performRotation(TreeNode*);
@@ -269,7 +270,6 @@ void performRotation(TreeNode* current){
 		
 	}
 }
-	
 
 
 void checkBottomMismatch(TreeNode* head, TreeNode* current){
@@ -295,6 +295,10 @@ void checkBottomMismatch(TreeNode* head, TreeNode* current){
 	}
 }
 
+void deletionFixer(TreeNode* current){
+	
+}
+
 void createRedBlackTree(char** seperatedInput){
 	TreeNode* head = new TreeNode(NULL, seperatedInput[0], true);
 	int count = 1;//skips 0 since that is the root of tree
@@ -316,9 +320,34 @@ void createRedBlackTree(char** seperatedInput){
 		count++;
 	}
 	
+	cout << "would you like to search for a number? (1 = yes, 2 = no) \n";
+	char* input = new char[2];
+	cin.getline(input, 2);
+	
+	
+	if(input[0] == '1'){
+		while(true){
+			cout << "Enter number to search for: ";
+			input = new char[6];
+			cin.getline(input, 6);
+			
+			bool numFound = false;
+			searchTree(head, input, numFound);
+
+			cout << "Would you like to search for something else? (1 = yes, 2 = no)\n";
+			input = new char[2];
+			cin.getline(input, 2);
+			if(input[0] != '1'){
+				break;
+			}
+			
+		}
+		
+	}
+	
 	
 	cout << "would you like to delete numbers? (1 = yes, 2 = no) \n";
-	char* input = new char[2];
+	input = new char[2];
 	cin.getline(input, 2);
 	
 	if(input[0] == '1'){
@@ -348,9 +377,8 @@ void createRedBlackTree(char** seperatedInput){
 			
 		}
 		
-	}else{
-		exit(420);//lel
 	}
+	
 	
 }
 
@@ -414,7 +442,7 @@ void convertFileInput(char* f){
 			count++;
 		}
 		
-		input[count - 1] = '\0';
+		input[count - 1] = '\0';//magic
 		cout << input << endl; 
 		separateInput(input);//calls seperate input here
 		
@@ -494,6 +522,46 @@ void visualizeTreeUntilMaxDepth(TreeNode* head){
 	cout << "\n\n";
 }
 
+void searchTree(TreeNode* current, char* input, bool& numberFound){
+	if(current != NULL){
+		int newNum = convertCharPointerToInt(input);
+		int currentNum = convertCharPointerToInt(current->getChar());
+		
+		if(newNum == currentNum){
+			if(!numberFound){
+				numberFound = true;
+				if(current->getParent() != NULL){
+					cout << currentNum << " was found in the tree. Parent: " << (current->getParent())->getChar() << endl; 
+				}else{
+					cout << currentNum << " was found in the tree. Parent: NULL" << endl; 
+				}
+				
+			}
+			
+		}else{
+			if(newNum >= currentNum){
+				if(current->getRight() != NULL){
+					current = current->getRight();
+					searchTree(current, input, numberFound);
+				}
+			}else{
+				if(current->getLeft() != NULL){
+					current = current->getLeft();
+					searchTree(current, input, numberFound);
+					
+				}
+			}
+			
+		}
+		
+	}else{
+		cout << "Current is NULL" << endl;
+	}
+	
+}
+
+
+
 void searchAndDelete(TreeNode* current, char* input, bool& numberFound){
 	if(current != NULL){
 		int newNum = convertCharPointerToInt(input);
@@ -503,12 +571,19 @@ void searchAndDelete(TreeNode* current, char* input, bool& numberFound){
 			if(!numberFound){
 				numberFound = true;
 				current->safeDelete();
+				if(current->getColor() == false){//if red just delete the mofo
+					
+				}else{
+					
+				}
+				
 			}
 			
 		}else{
 			if(newNum >= currentNum){
 				if(current->getRight() != NULL){
 					current = current->getRight();
+					
 					searchAndDelete(current, input, numberFound);
 				}
 			}else{

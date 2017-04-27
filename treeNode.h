@@ -39,8 +39,12 @@ class TreeNode
 		int convertCharToInt2(char);
 		int convertCharPointerToInt2(char*);
 		float getID();
-		bool isBlack();
+		bool getColor();//true is black
 		void setColor(bool);
+		bool isLeft();
+		TreeNode* getSibling();
+		void setID(float);
+		TreeNode* getHead(TreeNode*);
 };
 
 #endif

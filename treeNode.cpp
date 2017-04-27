@@ -171,7 +171,7 @@ void TreeNode::safeDelete(){//removes references to this and relocates current c
 					getParent()->setRight(NULL);
 					delete this;
 				}else{//in the extremely rare case that the IDs manage to be equal(insanely unlikely)
-					std::cout << "CRITICAL ERROR: PARENT CHILDREN NOT EQUIVELENT TO THIS";
+					std::cout << "CRITICAL ERROR: ASTRONOMICAL ID MISMATCH(restart)";
 					exit(20);
 				}
 			}
@@ -216,8 +216,6 @@ void TreeNode::safeDelete(){//removes references to this and relocates current c
 				setChar(getRight()->getChar());
 				getRight()->safeDelete();
 			}
-			
-			
 			
 		}
 	}else{
