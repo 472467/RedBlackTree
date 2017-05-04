@@ -140,6 +140,73 @@ bool TreeNode::getColor(){//true is black, false is red
 	return isBlack;
 }
 
+void TreeNode::safeDelete2(){
+	TreeNode* left = getLeft();
+	TreeNode* right = getRight();
+	TreeNode* selectedChild =NULL;
+	
+	if(left == NULL && right == NULL){//simply delete it if it has no children
+		delete this;
+	}else if(left == NULL && right != NULL){
+		selectedChild = right;
+	}else if(left != NULL && right == NULL){
+		selectedChild = left;
+	}else{//both are not NULL
+		if(left->hasChildren() && !(right->hasChildren())){
+			selectedChild = left;
+		}else if(!(left->hasChildren()) && (right->hasChildren())){
+			selectedChild = right;
+		}else{
+			selectedChild = right;
+		}
+	}
+	
+	if(hasOneChild() != NULL){//it has to be red and black(child and parent) 
+		setChar(selectedChild->getChar());//selectedChild will be correct since there is only one child to choose from
+		delete selectedChild;//its not possible to only have one child and for that child to have children
+		if(!getColor()){
+			setColor(true);
+		}
+	}else if(getColor()){
+		
+		
+	}else{//both parent and child is black
+		
+		
+	}
+
+}
+
+TreeNode* TreeNode::hasOneChild(){
+	if(getRight() != NULL && getLeft() != NULL){
+		return NULL;
+	}else if(getRight() == NULL && getLeft() == NULL){
+		return NULL;
+	}
+	if(getRight() != NULL){
+		return getRight();
+	}
+	
+	if(getLeft() != NULL){
+		return getLeft();
+	}
+	
+	return NULL;
+}
+
+bool TreeNode::hasChildren(){
+	if(getRight() != NULL){
+		return true;
+	}
+	
+	if(getLeft() != NULL){
+		return true;
+	}
+	
+	return false;
+}
+
+
 void TreeNode::safeDelete(){//removes references to this and relocates current children to replace itself within tree
 	int leftNum = 0;
 	int rightNum = 0;

@@ -8,8 +8,8 @@
 
 using namespace std;
 
-void seperateInput(char*);
-void convertFileInput(char*);
+void seperateInput(char*, TreeNode*&);
+void convertFileInput(char*, TreeNode*&);
 void visualizeTreeUntilMaxDepth(TreeNode* head);
 void searchAndDelete(TreeNode*, char*, bool&);
 void searchTree(TreeNode*, char*, bool&);
@@ -22,32 +22,47 @@ void addNumberToTree(TreeNode*, TreeNode*, TreeNode*);
 int convertCharToInt(char);
 void checkBottomMismatch(TreeNode*, TreeNode*);
 bool isStraightPath(TreeNode*);
+void translateInput(char*, TreeNode*&);
 
 int main(){
 	cout << "dots in visualization represent empty locations\n";
-	cout << "Would you like to input an a bunch of numbers or a textfile (1 = numbers, 2 = textfile):\n";
-	char* input = new char[2];
-	cin.getline(input, 2);
+	
+	TreeNode* head = NULL;
+	
+	while(true){
+		
+		cout << "(i)nsert - inserts number/s into tree // (r)ead - reads inserts input from file into tree // (p)rint - prints tree // (q)uit - exits program\n\n";
+		cin.getline(input, 10);
+		
+		translateInput(input, head);
+	}
+}
 
-	if(input[0] == '2'){//textfile input, DOESN't WORKS
-		
-		cout << "Input file name:\n";
-		input = new char[100];
-		cin.getline(input, 100);//NO COMMENTS REQUIRED DURING THE TIME OF SUBMISSION
-		
-		convertFileInput(input);
-
-	}else{//manual input, WORKS
-		
-		cout << "Input a bunch of numbers you would like to be in the tree(separate with single space), will be added one after another:\n";
+void translateInput(char* input, TreeNode*& head){
+	char* input = new char[10];
+	
+	if(strcmp(input, "insert") == 0 || strcmp(input, "i") == 0){
+		cout << "Input a number/s you would like to be in the tree(SEPERATE WITH SINGLE SPACE), will be added one after another:\n";
 		input = new char[1000];
 		cin.getline(input, 1000);
 		
-		separateInput(input);
+		separateInput(input, head);
+		
+	}else if(strcmp(input, "read") == 0 || strcmp(input, "r") == 0){
+		cout << "Input file nam(ex: 'john.txt')e:\n";
+		input = new char[100];
+		cin.getline(input, 100);
+		
+		convertFileInput(input, head);
+		
+	}else if(strcmp(print, "print") == 0 || strcmp(input, "p") == 0){
+		visualizeTreeUntilMaxDepth(head);
+	}else if(strcmp(input, "quit") == 0 || strcmp(input, "q") == 0){
+		exit(999);
 	}
+
 	
-	
-	
+	delete input;
 }
 
 void updateTreeColors(TreeNode*& head, TreeNode* current, bool& updated){
@@ -295,13 +310,13 @@ void checkBottomMismatch(TreeNode* head, TreeNode* current){
 	}
 }
 
-void deletionFixer(TreeNode* current){
+void createRedBlackTree(char** seperatedInput, TreeNode*& head){
+	int count = 0;
+	if(head == NULL){
+		head = new TreeNode(NULL, seperatedInput[0], true);
+		count = 1;//skips 0 since that is the root of tree
+	}
 	
-}
-
-void createRedBlackTree(char** seperatedInput){
-	TreeNode* head = new TreeNode(NULL, seperatedInput[0], true);
-	int count = 1;//skips 0 since that is the root of tree
 	visualizeTreeUntilMaxDepth(head);
 	while(strcmp(seperatedInput[count], "null") != 0){
 		cout << "RUN ==== " << count << endl;
@@ -324,65 +339,9 @@ void createRedBlackTree(char** seperatedInput){
 	char* input = new char[2];
 	cin.getline(input, 2);
 	
-	
-	if(input[0] == '1'){
-		while(true){
-			cout << "Enter number to search for: ";
-			input = new char[6];
-			cin.getline(input, 6);
-			
-			bool numFound = false;
-			searchTree(head, input, numFound);
-
-			cout << "Would you like to search for something else? (1 = yes, 2 = no)\n";
-			input = new char[2];
-			cin.getline(input, 2);
-			if(input[0] != '1'){
-				break;
-			}
-			
-		}
-		
-	}
-	
-	
-	cout << "would you like to delete numbers? (1 = yes, 2 = no) \n";
-	input = new char[2];
-	cin.getline(input, 2);
-	
-	if(input[0] == '1'){
-		while(true){
-			cout << "Enter number to delete: ";
-			input = new char[6];
-			cin.getline(input, 6);
-			
-			bool numFound = false;
-			searchAndDelete(head, input, numFound);
-			TreeNode* current = head;
-			bool updated = true;
-			while(updated){
-				updated = false;
-				updateTreeColors(head, current, updated);
-			}//runs until nothing is updated
-			
-			cout << endl;
-			visualizeTreeUntilMaxDepth(head);
-			
-			cout << "Would you like to delete something else? (1 = yes, 2 = no)\n";
-			input = new char[2];
-			cin.getline(input, 2);
-			if(input[0] != '1'){
-				break;
-			}
-			
-		}
-		
-	}
-	
-	
 }
 
-void separateInput(char* input){
+void separateInput(char* input, TreeNode*& head){
 	int count = 0;
 	int currentLength = 0;
 	int numberAmount = 0;
@@ -421,10 +380,10 @@ void separateInput(char* input){
 		count++;
 	}
 	
-	createRedBlackTree(seperatedInput);
+	createRedBlackTree(seperatedInput, head);
 }
 
-void convertFileInput(char* f){
+void convertFileInput(char* f, TreeNode*& head){
 	char* input = new char[10000];
 	
 	int count = 0;
@@ -444,7 +403,7 @@ void convertFileInput(char* f){
 		
 		input[count - 1] = '\0';//magic
 		cout << input << endl; 
-		separateInput(input);//calls seperate input here
+		separateInput(input, head);//calls seperate input here
 		
 	}
 	else //file could not be opened
@@ -459,7 +418,10 @@ void visualizeTreeUntilMaxDepth(TreeNode* head){
 	TreeNode* tCurrent = head;
 	bool allNull = false;
 	int nullCounter = 0;
-
+	if(head == NULL){
+		allNull  = true;
+		cout << "ERROR: trying to print null tree\n\n";
+	}
 	while(!allNull){
 		
 		char* directions;
