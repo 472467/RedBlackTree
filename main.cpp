@@ -31,7 +31,8 @@ int main(){
 	
 	while(true){
 		char* input = new char[10];
-		cout << "(i)nsert - inserts number/s into tree // (r)ead - reads inserts input from file into tree // (p)rint - prints tree // (q)uit - exits program\n\n";
+		cout << "\n(i)nsert - inserts number/s into tree // (r)ead - reads inserts input from file into tree\n(s)earch - searches tree for number // (p)rint - prints tree // (d)elete - deletes treeNode\n(q)uit - exits program\n\n";
+		cout << "Enter command:" ;
 		cin.getline(input, 10);
 		
 		translateInput(input, head);
@@ -49,7 +50,7 @@ void translateInput(char* input, TreeNode*& head){
 		separateInput(input, head);
 		
 	}else if(strcmp(input, "read") == 0 || strcmp(input, "r") == 0){
-		cout << "Input file nam(ex: 'john.txt')e:\n";
+		cout << "Input file name(ex: 'john.txt'):\n";
 		input = new char[100];
 		cin.getline(input, 100);
 		
@@ -57,8 +58,28 @@ void translateInput(char* input, TreeNode*& head){
 		
 	}else if(strcmp(input, "print") == 0 || strcmp(input, "p") == 0){
 		visualizeTreeUntilMaxDepth(head);
+	}else if(strcmp(input, "delete") == 0 || strcmp(input, "d") == 0){
+		cout << "Input number to delete:\n";
+		input = new char[10];
+		cin.getline(input, 10);
+		
+		bool numberFound  = false;
+		TreeNode* current = head;
+		
+		searchAndDelete(current, input, numberFound);//clone of searchTree just deletes number instead of printing
+	
+	}else if(strcmp(input, "search") == 0 || strcmp(input, "s") == 0){
+		cout << "input number you'd like to search for:\n";
+		input = new char[10];
+		cin.getline(input, 10);
+		TreeNode* current = head;
+		bool rofl  = false;
+		
+		searchTree(current, input, rofl);
 	}else if(strcmp(input, "quit") == 0 || strcmp(input, "q") == 0){
 		exit(999);
+	}else{
+		cout << "\nUnrecognized command.\n";
 	}
 
 	
@@ -490,6 +511,17 @@ void searchTree(TreeNode* current, char* input, bool& numberFound){
 				numberFound = true;
 				if(current->getParent() != NULL){
 					cout << currentNum << " was found in the tree. Parent: " << (current->getParent())->getChar() << endl; 
+					if(current->getLeft() != NULL){
+						cout << "LeftChild: " << (current->getLeft())->getChar() << endl;
+					}else{
+						cout << "LeftChild: NULL\n" ;// << (current->getLeft())->getChar();
+					}
+					
+					if(current->getRight() != NULL){
+						cout << "RightChild: " << (current->getRight())->getChar() << endl;
+					}else{
+						cout << "RightChild: NULL\n" ;// << (current->getLeft())->getChar();
+					}
 				}else{
 					cout << currentNum << " was found in the tree. Parent: NULL" << endl; 
 				}
@@ -528,7 +560,7 @@ void searchAndDelete(TreeNode* current, char* input, bool& numberFound){
 		if(newNum == currentNum){
 			if(!numberFound){
 				numberFound = true;
-				current->safeDelete();
+				current->safeDelete2();
 				if(current->getColor() == false){//if red just delete the mofo
 					
 				}else{

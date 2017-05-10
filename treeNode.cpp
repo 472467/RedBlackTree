@@ -161,17 +161,25 @@ void TreeNode::safeDelete2(){
 		}
 	}
 	
-	if(hasOneChild() != NULL){//it has to be red and black(child and parent) 
-		setChar(selectedChild->getChar());//selectedChild will be correct since there is only one child to choose from
-		delete selectedChild;//its not possible to only have one child and for that child to have children
-		if(!getColor()){
-			setColor(true);
+	if(hasOneChild()){//it has to be red and black(child and parent) 
+		selectedChild->setParent(getParent());
+		if(getParent() != NULL){
+			if(getRight() == NULL){
+				getParent()->setLeft(selectedChild);
+			}else if(getLeft() == NULL){
+				getParent()->setRight(selectedChild);
+			}else if((getParent()->getRight())->getID() == getID()){
+				getParent()->setRight(selectedChild);
+			}else{
+				getParent()->setLeft(selectedChild);
+			}
 		}
-	}else if(getColor()){
-		
+		delete this;
+	}else if(getColor()){//if black
+		std::cout<< "Black";
 		
 	}else{//both parent and child is black
-		
+		std::cout << "else";
 		
 	}
 
