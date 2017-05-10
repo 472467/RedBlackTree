@@ -14,7 +14,7 @@ void visualizeTreeUntilMaxDepth(TreeNode* head);
 void searchAndDelete(TreeNode*, char*, bool&);
 void searchTree(TreeNode*, char*, bool&);
 void updateTreeColors(TreeNode*&, TreeNode*, bool&);
-void separateInput(char*);
+void separateInput(char*, TreeNode*&);
 void performRotation(TreeNode*);
 char* directionsToBalancedNode(int, int, char*&);
 int convertCharPointerToInt(char*);
@@ -30,7 +30,7 @@ int main(){
 	TreeNode* head = NULL;
 	
 	while(true){
-		
+		char* input = new char[10];
 		cout << "(i)nsert - inserts number/s into tree // (r)ead - reads inserts input from file into tree // (p)rint - prints tree // (q)uit - exits program\n\n";
 		cin.getline(input, 10);
 		
@@ -39,7 +39,7 @@ int main(){
 }
 
 void translateInput(char* input, TreeNode*& head){
-	char* input = new char[10];
+	//char* input = new char[10];
 	
 	if(strcmp(input, "insert") == 0 || strcmp(input, "i") == 0){
 		cout << "Input a number/s you would like to be in the tree(SEPERATE WITH SINGLE SPACE), will be added one after another:\n";
@@ -55,7 +55,7 @@ void translateInput(char* input, TreeNode*& head){
 		
 		convertFileInput(input, head);
 		
-	}else if(strcmp(print, "print") == 0 || strcmp(input, "p") == 0){
+	}else if(strcmp(input, "print") == 0 || strcmp(input, "p") == 0){
 		visualizeTreeUntilMaxDepth(head);
 	}else if(strcmp(input, "quit") == 0 || strcmp(input, "q") == 0){
 		exit(999);
@@ -88,7 +88,7 @@ void updateTreeColors(TreeNode*& head, TreeNode* current, bool& updated){
 							current = current->getParent();
 							
 							performRotation(current);
-							visualizeTreeUntilMaxDepth(head);
+							//visualizeTreeUntilMaxDepth(head);
 							head = current;
 
 						}else{
@@ -100,7 +100,7 @@ void updateTreeColors(TreeNode*& head, TreeNode* current, bool& updated){
 								
 							}
 							performRotation(current);
-							visualizeTreeUntilMaxDepth(head);
+							//visualizeTreeUntilMaxDepth(head);
 						}
 					}else{//only zigzag paths, must have GP
 					
@@ -108,10 +108,10 @@ void updateTreeColors(TreeNode*& head, TreeNode* current, bool& updated){
 						bool tColor = current->getColor();
 						current->setColor((current->getParent())->getColor());
 						(current->getParent())->setColor(tColor);
-						visualizeTreeUntilMaxDepth(head);
+						//visualizeTreeUntilMaxDepth(head);
 						cout << "Double ";
 						performRotation(current);
-						visualizeTreeUntilMaxDepth(head);
+						//visualizeTreeUntilMaxDepth(head);
 						if(head->getParent() != NULL){
 							head = head->getParent();
 						}
@@ -161,11 +161,11 @@ void updateTreeColors(TreeNode*& head, TreeNode* current, bool& updated){
 						current->setColor((current->getParent())->getColor());
 						(current->getParent())->setColor(tColor);
 						
-						visualizeTreeUntilMaxDepth(head);
+						//visualizeTreeUntilMaxDepth(head);
 						cout << "Double ";
 						performRotation(current);
 						head = current;
-						visualizeTreeUntilMaxDepth(head);
+						//visualizeTreeUntilMaxDepth(head);
 						if(head->getParent() != NULL){
 							head = head->getParent();
 						}
@@ -173,7 +173,7 @@ void updateTreeColors(TreeNode*& head, TreeNode* current, bool& updated){
 					}else{
 						
 						performRotation(current);
-						visualizeTreeUntilMaxDepth(head);
+						//visualizeTreeUntilMaxDepth(head);
 						cout << "Double ";
 						
 						bool tColor = current->getColor();
@@ -184,7 +184,7 @@ void updateTreeColors(TreeNode*& head, TreeNode* current, bool& updated){
 						if(head->getParent() != NULL){
 							head = head->getParent();
 						}
-						visualizeTreeUntilMaxDepth(head);
+						//visualizeTreeUntilMaxDepth(head);
 					}
 				}
 				rotated = true;
@@ -317,7 +317,7 @@ void createRedBlackTree(char** seperatedInput, TreeNode*& head){
 		count = 1;//skips 0 since that is the root of tree
 	}
 	
-	visualizeTreeUntilMaxDepth(head);
+	//visualizeTreeUntilMaxDepth(head);
 	while(strcmp(seperatedInput[count], "null") != 0){
 		cout << "RUN ==== " << count << endl;
 		TreeNode* newNode = new TreeNode(NULL, seperatedInput[count]);
@@ -330,14 +330,10 @@ void createRedBlackTree(char** seperatedInput, TreeNode*& head){
 		}
 		updateTreeColors(head, newNode, updated);
 		updateTreeColors(head, newNode, updated);
-		visualizeTreeUntilMaxDepth(head);
+		//visualizeTreeUntilMaxDepth(head);
 		//checkBottomMismatch(head, current);
 		count++;
 	}
-	
-	cout << "would you like to search for a number? (1 = yes, 2 = no) \n";
-	char* input = new char[2];
-	cin.getline(input, 2);
 	
 }
 
