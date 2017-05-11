@@ -140,49 +140,176 @@ bool TreeNode::getColor(){//true is black, false is red
 	return isBlack;
 }
 
-void TreeNode::safeDelete2(){
+void TreeNode::safeDelete2(){//BINARY DELETE FIRST THEN FIX THE NODES IT SCREWS UP
 	TreeNode* left = getLeft();
 	TreeNode* right = getRight();
-	TreeNode* selectedChild =NULL;
+	TreeNode* selectedReplacement = NULL;
 	
-	if(left == NULL && right == NULL){//simply delete it if it has no children
-		delete this;
-	}else if(left == NULL && right != NULL){
-		selectedChild = right;
-	}else if(left != NULL && right == NULL){
-		selectedChild = left;
-	}else{//both are not NULL
-		if(left->hasChildren() && !(right->hasChildren())){
-			selectedChild = left;
-		}else if(!(left->hasChildren()) && (right->hasChildren())){
-			selectedChild = right;
-		}else{
-			selectedChild = right;
-		}
-	}
-	
-	if(hasOneChild()){//it has to be red and black(child and parent) 
-		selectedChild->setParent(getParent());
-		if(getParent() != NULL){
-			if(getRight() == NULL){
-				getParent()->setLeft(selectedChild);
-			}else if(getLeft() == NULL){
-				getParent()->setRight(selectedChild);
-			}else if((getParent()->getRight())->getID() == getID()){
-				getParent()->setRight(selectedChild);
+	if(left == NULL && right == NULL){//no children, NEED DOUBLE BLACK FIX
+		if(parent != NULL){
+			if((getParent()->getLeft())->getID() == getID()){
+				getParent()->setLeft(NULL);
 			}else{
-				getParent()->setLeft(selectedChild);
+				getParent()->setRight(NULL);
 			}
 		}
-		delete this;
-	}else if(getColor()){//if black
-		std::cout<< "Black";
 		
-	}else{//both parent and child is black
-		std::cout << "else";
+		if(!getColor()){
+			delete this;
+		}else{//double black
+			//this will be replaced by a double black NULL
+			
+			if(getParent() != NULL){
+				if(getSibling()->getColor() && oneRedChild(getSibling())){//sibling is black and has one red child
+					if(
+					
+				}
+			}else{
+				std::cout << "ERROR: Trying to delete the last node, deletion aborted.\n";
+			}
+			
+			delete this;
+		}
+	}else if(left == NULL && right != NULL){//one right child, DONE
+		right->setParent(getParent());
+		if(parent != NULL){
+			if((getParent()->getLeft())->getID() == getID()){
+				getParent()->setLeft(right);
+			}else{
+				getParent()->setRight(right);
+			}
+		}
+		
+		if(!getColor()){//impossible to have only one child and for it and parent to be black
+			delete this;
+		}else{
+			right->setColor(true);
+		}
+		
+	}else if(left != NULL && right == NULL){//one left child, DONE
+		right->setParent(getParent());
+		if(parent != NULL){
+			if((getParent()->getLeft())->getID() == getID()){
+				getParent()->setLeft(left);
+			}else{
+				getParent()->setRight(left);
+			}
+		}
+		
+		if(!getColor()){//impossible to have only one child and for it and parent to be black
+			delete this;
+		}else{
+			left->setColor(true);
+		}
+		
+	}else{//two children!, NEED DOUBLE BLACK FIX
+		TreeNode* successor = right;// find successor( go right once then left until NULL
+		while(successor->getLeft() != NULL){
+			successor = successor->getLeft();
+		}
+		char* charStorage = successor->getChar();
+		successor->setChar(getChar());
+		setChar(charStorage);
+		
+		if(successor->getRight() != NULL){
+			if((successor->getParent())->getID() != getID()){//means that successor isnt the right child of this
+				successor->getParent()->setLeft(successor->getRight());
+			}else{
+				setRight(successor->getRight());
+			}
+			
+			successor->getRight()->setParent(successor->getParent());
+		}else{
+			if((successor->getParent())->getID() != getID()){//means that successor isnt the right child of this
+				successor->getParent()->setLeft(successor->getRight());
+			}else{
+				setRight(successor->getRight());
+			}
+		}
+		
+		if(!successor->getColor()){
+			delete this;
+		}else{//double black
+			
+		}
 		
 	}
+}
 
+bool TreeNode:oneRedChild(TreeNode* current){
+	if(current->getLeft() != NULL){
+		if(!(current->getLeft())->getColor()){
+			return true;
+		}
+	}
+	
+	if(current->getRight() != NULL){
+		if(!(current->getRight())->getColor()){
+			return true;
+		}
+	}
+	
+	return false;
+}
+
+void TreeNode::performRotation(){
+	TreeNode* current = this;
+	
+	if(current->getParent() != NULL){
+		bool tColor = current->getColor();
+		//current->setColor((current->getParent())->getColor());
+		//(current->getParent())->setColor(tColor);
+		
+		if(current->isLeft()){//rotates right, never rotates the root(i think)
+			std::cout << "right rotation on " << current->getChar() << "\n";
+		
+			TreeNode* p = current->getParent();
+			TreeNode* gp = p->getParent();
+			TreeNode* r = current->getRight();
+		
+			if(gp != NULL){
+				if(p->isLeft()){//gp 1/2
+					gp->setLeft(current);//gets wrong one!
+				}else{
+					gp->setRight(current);
+				}
+			}
+			
+			current->setParent(gp);//gp 2/2
+			current->setRight(p);//p 1/2
+			p->setLeft(r);
+			p->setParent(current);
+			if(r != NULL){
+				r->setParent(p);
+			}
+			
+		}else{//rotates left
+		
+			std::cout << "left rotation on " << current->getChar() << "\n";
+			TreeNode* p = current->getParent();
+			TreeNode* gp = p->getParent();
+			TreeNode* l = current->getLeft();
+			
+			if(gp != NULL){
+				if(p->isLeft()){
+					gp->setLeft(current);
+				}else{
+					gp->setRight(current);
+				}
+			}
+			
+			current->setParent(gp);//if null sets to null
+			current->setLeft(p);
+			p->setRight(l);
+			p->setParent(current);
+			if(l != NULL){
+				l->setParent(p);
+			}
+			
+		}
+		
+		
+	}
 }
 
 TreeNode* TreeNode::hasOneChild(){
