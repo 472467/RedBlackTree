@@ -140,12 +140,23 @@ bool TreeNode::getColor(){//true is black, false is red
 	return isBlack;
 }
 
+bool TreeNode::isRight(){
+	if(getParent() != NULL){
+		if((getParent()->getLeft())->getID() == getID()){
+			return false;;
+		}else{
+			return true;
+		}
+	}
+}
+
 void TreeNode::safeDelete2(){//BINARY DELETE FIRST THEN FIX THE NODES IT SCREWS UP
 	TreeNode* left = getLeft();
 	TreeNode* right = getRight();
 	TreeNode* selectedReplacement = NULL;
 	
 	if(left == NULL && right == NULL){//no children, NEED DOUBLE BLACK FIX
+		//std::cout << "this ran: " << getChar() << std::endl;
 		if(parent != NULL){
 			if((getParent()->getLeft())->getID() == getID()){
 				getParent()->setLeft(NULL);
@@ -158,14 +169,55 @@ void TreeNode::safeDelete2(){//BINARY DELETE FIRST THEN FIX THE NODES IT SCREWS 
 			delete this;
 		}else{//double black
 			//this will be replaced by a double black NULL
+			bool resolved = false;
+			TreeNode* shiftedBlame = this;
 			
-			if(getParent() != NULL){
-				if(getSibling()->getColor() && oneRedChild(getSibling())){//sibling is black and has one red child
-					if(
+			while(!resolved){
+				if(shiftedBlame->getParent() != NULL){
+					TreeNode* sibling = shiftedBlame->getSibling();
+					TreeNode* redChild = oneRedChild(sibling);
 					
+					if(shiftedBlame->getSibling()->getColor() && redChild != NULL){//sibling is black and has one red child
+						if(getSibling()->isRight() && redChild->isRight()){//RR
+							sibling->performRotation();
+							redChild->setColor(true);
+							
+						}else if(!((shiftedBlame->getSibling())->isRight()) && !(redChild->isRight())){//LL
+							sibling->performRotation();
+							redChild->setColor(true);
+							
+						}else if(!((shiftedBlame->getSibling())->isRight()) && redChild->isRight()){//LR
+							redChild->performRotation();
+							redChild->performRotation();
+							sibling->setColor(true);
+							
+						}else if((shiftedBlame->getSibling())->isRight() && !(redChild->isRight())){//RL
+							redChild->performRotation();
+							redChild->performRotation();
+							sibling->setColor(true);
+							
+						}else{
+							std::cout << "Error in DB deletion, no valid path\n";
+						}
+						resolved = true;
+						
+					}else if((shiftedBlame->getSibling())->getColor() && redChild == NULL){
+						//it appears the double black burden must be moved upwards
+						sibling->setColor(false);
+						shiftedBlame = shiftedBlame->getParent();
+						std::cout<< "FIALURE";
+						
+					}else if((shiftedBlame->getSibling())->getColor() == false){
+						TreeNode* tParent = sibling->getParent();
+						sibling->performRotation();
+						resolved = true;
+						//tParent->setColor(true);
+						//if(tParent-
+						
+					}
+				}else{
+					std::cout << "ERROR: Trying to delete the last node, deletion aborted.\n";
 				}
-			}else{
-				std::cout << "ERROR: Trying to delete the last node, deletion aborted.\n";
 			}
 			
 			delete this;
@@ -236,20 +288,20 @@ void TreeNode::safeDelete2(){//BINARY DELETE FIRST THEN FIX THE NODES IT SCREWS 
 	}
 }
 
-bool TreeNode:oneRedChild(TreeNode* current){
+TreeNode* TreeNode::oneRedChild(TreeNode* current){
 	if(current->getLeft() != NULL){
 		if(!(current->getLeft())->getColor()){
-			return true;
+			return current->getLeft();
 		}
 	}
 	
 	if(current->getRight() != NULL){
 		if(!(current->getRight())->getColor()){
-			return true;
+			return current->getRight();
 		}
 	}
 	
-	return false;
+	return NULL;
 }
 
 void TreeNode::performRotation(){

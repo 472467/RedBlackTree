@@ -31,7 +31,7 @@ int main(){
 	
 	while(true){
 		char* input = new char[10];
-		cout << "\n(i)nsert - inserts number/s into tree // (r)ead - reads inserts input from file into tree\n(s)earch - searches tree for number // (p)rint - prints tree // (d)elete - deletes treeNode\n(q)uit - exits program\n\n";
+		cout << "\n(i)nsert - inserts number/s into tree // (r)ead - reads inserts input from file into tree\n(s)earch - searches tree for number // (p)rint - prints tree // (d)elete - deletes treeNode\n(c)lear - clears the tree // (q)uit - exits program\n\n";
 		cout << "Enter command:" ;
 		cin.getline(input, 10);
 		
@@ -76,6 +76,8 @@ void translateInput(char* input, TreeNode*& head){
 		bool rofl  = false;
 		
 		searchTree(current, input, rofl);
+	}else if(strcmp(input, "clear") == 0 || strcmp(input, "c") == 0){
+		head = NULL;
 	}else if(strcmp(input, "quit") == 0 || strcmp(input, "q") == 0){
 		exit(999);
 	}else{
@@ -560,13 +562,8 @@ void searchAndDelete(TreeNode* current, char* input, bool& numberFound){
 		if(newNum == currentNum){
 			if(!numberFound){
 				numberFound = true;
+				cout << "Number found.\n";
 				current->safeDelete2();
-				if(current->getColor() == false){//if red just delete the mofo
-					
-				}else{
-					
-				}
-				
 			}
 			
 		}else{

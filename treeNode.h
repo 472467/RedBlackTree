@@ -48,7 +48,9 @@ class TreeNode
 		TreeNode* getSibling();
 		void setID(float);
 		TreeNode* getHead(TreeNode*);
+		TreeNode* oneRedChild(TreeNode* current);
 		void performRotation();
+		bool isRight();
 };
 
 #endif
