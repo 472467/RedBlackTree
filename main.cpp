@@ -11,7 +11,7 @@ using namespace std;
 void seperateInput(char*, TreeNode*&);
 void convertFileInput(char*, TreeNode*&);
 void visualizeTreeUntilMaxDepth(TreeNode* head);
-void searchAndDelete(TreeNode*, char*, bool&);
+void searchAndDelete(TreeNode*, char*, bool&, TreeNode*&);
 void searchTree(TreeNode*, char*, bool&);
 void updateTreeColors(TreeNode*&, TreeNode*, bool&);
 void separateInput(char*, TreeNode*&);
@@ -58,6 +58,7 @@ void translateInput(char* input, TreeNode*& head){
 		
 	}else if(strcmp(input, "print") == 0 || strcmp(input, "p") == 0){
 		visualizeTreeUntilMaxDepth(head);
+		
 	}else if(strcmp(input, "delete") == 0 || strcmp(input, "d") == 0){
 		cout << "Input number to delete:\n";
 		input = new char[10];
@@ -66,7 +67,7 @@ void translateInput(char* input, TreeNode*& head){
 		bool numberFound  = false;
 		TreeNode* current = head;
 		
-		searchAndDelete(current, input, numberFound);//clone of searchTree just deletes number instead of printing
+		searchAndDelete(current, input, numberFound, head);//clone of searchTree just deletes number instead of printing
 	
 	}else if(strcmp(input, "search") == 0 || strcmp(input, "s") == 0){
 		cout << "input number you'd like to search for:\n";
@@ -554,7 +555,7 @@ void searchTree(TreeNode* current, char* input, bool& numberFound){
 
 
 
-void searchAndDelete(TreeNode* current, char* input, bool& numberFound){
+void searchAndDelete(TreeNode* current, char* input, bool& numberFound, TreeNode*& head){
 	if(current != NULL){
 		int newNum = convertCharPointerToInt(input);
 		int currentNum = convertCharPointerToInt(current->getChar());
@@ -563,7 +564,7 @@ void searchAndDelete(TreeNode* current, char* input, bool& numberFound){
 			if(!numberFound){
 				numberFound = true;
 				cout << "Number found.\n";
-				current->safeDelete2();
+				current->safeDelete2(head);
 			}
 			
 		}else{
@@ -571,12 +572,12 @@ void searchAndDelete(TreeNode* current, char* input, bool& numberFound){
 				if(current->getRight() != NULL){
 					current = current->getRight();
 					
-					searchAndDelete(current, input, numberFound);
+					searchAndDelete(current, input, numberFound, head);
 				}
 			}else{
 				if(current->getLeft() != NULL){
 					current = current->getLeft();
-					searchAndDelete(current, input, numberFound);
+					searchAndDelete(current, input, numberFound, head);
 					
 				}
 			}

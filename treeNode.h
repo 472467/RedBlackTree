@@ -26,7 +26,7 @@ class TreeNode
 		char* getChar();
 		void setChar(char*);
 		void safeDelete();
-		void safeDelete2();
+		void safeDelete2(TreeNode*&);
 		bool hasChildren();
 		TreeNode* hasOneChild();
 		
