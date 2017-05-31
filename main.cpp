@@ -19,6 +19,7 @@ void performRotation(TreeNode*);
 char* directionsToBalancedNode(int, int, char*&);
 int convertCharPointerToInt(char*);
 void addNumberToTree(TreeNode*, TreeNode*, TreeNode*);
+void fixMinorErrors(TreeNode*& head, TreeNode* current);
 int convertCharToInt(char);
 void checkBottomMismatch(TreeNode*, TreeNode*);
 bool isStraightPath(TreeNode*);
@@ -68,7 +69,8 @@ void translateInput(char* input, TreeNode*& head){
 		TreeNode* current = head;
 		
 		searchAndDelete(current, input, numberFound, head);//clone of searchTree just deletes number instead of printing
-	
+		current = head;
+		fixMinorErrors(head, current);
 	}else if(strcmp(input, "search") == 0 || strcmp(input, "s") == 0){
 		cout << "input number you'd like to search for:\n";
 		input = new char[10];
@@ -233,6 +235,8 @@ void updateTreeColors(TreeNode*& head, TreeNode* current, bool& updated){
 	}
 	
 }
+
+
 
 bool isStraightPath(TreeNode* current){
 	TreeNode* p = current->getParent();
@@ -429,6 +433,30 @@ void convertFileInput(char* f, TreeNode*& head){
 	else //file could not be opened
 	{
 		cout << "File could not be opened." << endl;
+	}
+}
+
+void fixMinorErrors(TreeNode*& head, TreeNode* current){
+	if(current->getLeft() != NULL){
+		if(current->getLeft()->getColor() && !(current->getLeft()->hasChildren()) && !(current->getColor())){
+			current->getLeft()->setColor(false);
+			current->setColor(true);
+		}
+		cout << "testo";
+		TreeNode* tCurrent = current;
+		current = current->getLeft();
+		fixMinorErrors(head, current);
+		current = tCurrent;
+	}
+	
+	if(current->getRight() != NULL){
+		if(current->getRight()->getColor() && !(current->getRight()->hasChildren()) && !(current->getColor())){
+			current->getRight()->setColor(false);
+			current->setColor(true);
+		}
+		cout << "testo";
+		current = current->getRight();
+		fixMinorErrors(head, current);
 	}
 }
 

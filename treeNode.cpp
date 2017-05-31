@@ -169,8 +169,8 @@ void TreeNode::safeDelete2(TreeNode*& head){//BINARY DELETE FIRST THEN FIX THE N
 			//this will be replaced by a double black NULL
 			bool resolved = false;
 			TreeNode* shiftedBlame = this;
-			std::cout << shiftedBlame->getChar() << "test\n" << std::endl;
-			std::cout << shiftedBlame->getParent()->getLeft() << std::endl;
+			//std::cout << shiftedBlame->getChar() << "test\n" << std::endl;
+			//std::cout << shiftedBlame->getParent()->getLeft() << std::endl;
 			while(!resolved){
 				if(shiftedBlame->getParent() != NULL){
 					TreeNode* sibling = shiftedBlame->getSibling();
@@ -227,11 +227,11 @@ void TreeNode::safeDelete2(TreeNode*& head){//BINARY DELETE FIRST THEN FIX THE N
 						}
 						resolved = true;
 						
-					}else if((shiftedBlame->getSibling())->getColor() && redChild == NULL){
+					}else if(((shiftedBlame->getSibling())->getColor() || shiftedBlame->getSibling() == NULL) && redChild == NULL){
 						//it appears the double black burden must be moved upwards
 						sibling->setColor(false);
 						shiftedBlame = shiftedBlame->getParent();
-						std::cout<< "FIALURE";
+						//std::cout<< "FIALURE";
 						
 					}else if((shiftedBlame->getSibling())->getColor() == false){
 						TreeNode* tParent = sibling->getParent();
@@ -258,7 +258,7 @@ void TreeNode::safeDelete2(TreeNode*& head){//BINARY DELETE FIRST THEN FIX THE N
 				if((getParent()->getLeft())->getID() == getID()){
 					getParent()->setLeft(NULL);
 				}else{
-					std::cout << "shit" << std::endl;
+					//std::cout << "shit" << std::endl;
 					getParent()->setRight(NULL);
 				}
 			}
@@ -302,13 +302,13 @@ void TreeNode::safeDelete2(TreeNode*& head){//BINARY DELETE FIRST THEN FIX THE N
 		while(successor->getLeft() != NULL){
 			successor = successor->getLeft();
 		}
-		std::cout << getChar() << std::endl;
+		//std::cout << getChar() << std::endl;
 		
 		char* charStorage = successor->getChar();
 		successor->setChar(getChar());
 		setChar(charStorage);
 		
-		std::cout << getChar() << std::endl;
+		//std::cout << getChar() << std::endl;
 		
 		if(successor->getRight() != NULL){
 			if((successor->getParent())->getID() != getID()){//means that successor isnt the right child of this
