@@ -169,7 +169,8 @@ void TreeNode::safeDelete2(TreeNode*& head){//BINARY DELETE FIRST THEN FIX THE N
 			//this will be replaced by a double black NULL
 			bool resolved = false;
 			TreeNode* shiftedBlame = this;
-			
+			std::cout << shiftedBlame->getChar() << "test\n" << std::endl;
+			std::cout << shiftedBlame->getParent()->getLeft() << std::endl;
 			while(!resolved){
 				if(shiftedBlame->getParent() != NULL){
 					TreeNode* sibling = shiftedBlame->getSibling();
@@ -178,6 +179,10 @@ void TreeNode::safeDelete2(TreeNode*& head){//BINARY DELETE FIRST THEN FIX THE N
 					
 					if(shiftedBlame->getSibling()->getColor() && redChild != NULL){//sibling is black and has one red child
 						if(getSibling()->isRight() && redChild->isRight()){//RR
+							bool tColor = sibling->getColor();
+							sibling->setColor(sibling->getParent()->getColor());
+							sibling->getParent()->setColor(tColor);
+							
 							sibling->performRotation();
 							redChild->setColor(true);
 							
@@ -187,6 +192,10 @@ void TreeNode::safeDelete2(TreeNode*& head){//BINARY DELETE FIRST THEN FIX THE N
 							}
 							
 						}else if(!((shiftedBlame->getSibling())->isRight()) && !(redChild->isRight())){//LL
+							bool tColor = sibling->getColor();
+							sibling->setColor(sibling->getParent()->getColor());
+							sibling->getParent()->setColor(tColor);
+							
 							sibling->performRotation();
 							redChild->setColor(true);
 							
@@ -226,6 +235,10 @@ void TreeNode::safeDelete2(TreeNode*& head){//BINARY DELETE FIRST THEN FIX THE N
 						
 					}else if((shiftedBlame->getSibling())->getColor() == false){
 						TreeNode* tParent = sibling->getParent();
+						bool tColor = sibling->getColor();
+						sibling->setColor(sibling->getParent()->getColor());
+						sibling->getParent()->setColor(tColor);
+						
 						sibling->performRotation();
 						if(sibling->getParent() == NULL){
 							head = sibling;
@@ -318,7 +331,7 @@ void TreeNode::safeDelete2(TreeNode*& head){//BINARY DELETE FIRST THEN FIX THE N
 		}else{//double black
 			bool resolved = false;
 			TreeNode* shiftedBlame = this;
-			
+			bool evenMoreShiftedBlame = false;
 			
 			while(!resolved){
 				if(shiftedBlame->getParent() != NULL){
@@ -329,6 +342,10 @@ void TreeNode::safeDelete2(TreeNode*& head){//BINARY DELETE FIRST THEN FIX THE N
 					
 					if(shiftedBlame->getSibling()->getColor() && redChild != NULL){//sibling is black and has one red child
 						if(getSibling()->isRight() && redChild->isRight()){//RR
+							bool tColor = sibling->getColor();
+							sibling->setColor(sibling->getParent()->getColor());
+							sibling->getParent()->setColor(tColor);
+							
 							sibling->performRotation();
 							redChild->setColor(true);
 							
@@ -338,6 +355,10 @@ void TreeNode::safeDelete2(TreeNode*& head){//BINARY DELETE FIRST THEN FIX THE N
 							}
 							
 						}else if(!((shiftedBlame->getSibling())->isRight()) && !(redChild->isRight())){//LL
+							bool tColor = sibling->getColor();
+							sibling->setColor(sibling->getParent()->getColor());
+							sibling->getParent()->setColor(tColor);
+							
 							sibling->performRotation();
 							redChild->setColor(true);
 							
@@ -377,6 +398,10 @@ void TreeNode::safeDelete2(TreeNode*& head){//BINARY DELETE FIRST THEN FIX THE N
 						
 					}else if((shiftedBlame->getSibling())->getColor() == false){
 						TreeNode* tParent = sibling->getParent();
+						bool tColor = sibling->getColor();
+						sibling->setColor(sibling->getParent()->getColor());
+						sibling->getParent()->setColor(tColor);
+						
 						sibling->performRotation();
 						if(sibling->getParent() == NULL){
 							head = sibling;
@@ -388,29 +413,67 @@ void TreeNode::safeDelete2(TreeNode*& head){//BINARY DELETE FIRST THEN FIX THE N
 						
 					}
 				}else{
+					
+					char* tChar = head->getChar();
+					head->setChar(successor->getChar());
+					successor->setChar(tChar);
+					
+					int failed =0;
+					
+					if(successor->getParent() != NULL){
+						if(successor->getParent()->getRight() != NULL){
+							if(successor->getID() != ((successor->getParent())->getRight())->getID()){
+								failed++;
+							}
+						}
+						if(successor->getParent()->getLeft() != NULL){
+							if(successor->getID() != ((successor->getParent())->getLeft())->getID()){
+								failed++;
+							}
+						}
+						
+						if(failed == 1){
+							if(successor->getParent()->getLeft() == NULL){
+								successor->getParent()->setLeft(successor);
+							}else{
+								successor->getParent()->setRight(successor);
+							}
+						}
+						
+					}
+					
+					successor->safeDelete2(head);
+					resolved = true;
+					evenMoreShiftedBlame = true;
+					
+					
+					
 					//deleting root, deletes successor instead
 				}
 			}//end of while loop
-			
-			delete successor;
+			if(!evenMoreShiftedBlame){
+				delete successor;
+			}
 		}
 		
 	}
 }
 
 TreeNode* TreeNode::oneRedChild(TreeNode* current){
-	if(current->getLeft() != NULL){
-		if(!(current->getLeft())->getColor()){
-			return current->getLeft();
+	if(current != NULL){
+		if(current->getLeft() != NULL){
+			if(!(current->getLeft())->getColor()){
+				return current->getLeft();
+			}
+		}
+
+	
+		if(current->getRight() != NULL){
+			if(!(current->getRight())->getColor()){
+				return current->getRight();
+			}
 		}
 	}
-	
-	if(current->getRight() != NULL){
-		if(!(current->getRight())->getColor()){
-			return current->getRight();
-		}
-	}
-	
 	return NULL;
 }
 
