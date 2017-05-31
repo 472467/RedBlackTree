@@ -442,7 +442,7 @@ void fixMinorErrors(TreeNode*& head, TreeNode* current){
 			current->getLeft()->setColor(false);
 			current->setColor(true);
 		}
-		cout << "testo";
+		//cout << "testo";
 		TreeNode* tCurrent = current;
 		current = current->getLeft();
 		fixMinorErrors(head, current);
@@ -454,7 +454,7 @@ void fixMinorErrors(TreeNode*& head, TreeNode* current){
 			current->getRight()->setColor(false);
 			current->setColor(true);
 		}
-		cout << "testo";
+		//cout << "testo";
 		current = current->getRight();
 		fixMinorErrors(head, current);
 	}
