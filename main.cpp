@@ -437,26 +437,28 @@ void convertFileInput(char* f, TreeNode*& head){
 }
 
 void fixMinorErrors(TreeNode*& head, TreeNode* current){
-	if(current->getLeft() != NULL){
-		if(current->getLeft()->getColor() && !(current->getLeft()->hasChildren()) && !(current->getColor())){
-			current->getLeft()->setColor(false);
-			current->setColor(true);
+	if(head != NULL){
+		if(current->getLeft() != NULL){
+			if(current->getLeft()->getColor() && !(current->getLeft()->hasChildren()) && !(current->getColor())){
+				current->getLeft()->setColor(false);
+				current->setColor(true);
+			}
+			//cout << "testo";
+			TreeNode* tCurrent = current;
+			current = current->getLeft();
+			fixMinorErrors(head, current);
+			current = tCurrent;
 		}
-		//cout << "testo";
-		TreeNode* tCurrent = current;
-		current = current->getLeft();
-		fixMinorErrors(head, current);
-		current = tCurrent;
-	}
-	
-	if(current->getRight() != NULL){
-		if(current->getRight()->getColor() && !(current->getRight()->hasChildren()) && !(current->getColor())){
-			current->getRight()->setColor(false);
-			current->setColor(true);
+		
+		if(current->getRight() != NULL){
+			if(current->getRight()->getColor() && !(current->getRight()->hasChildren()) && !(current->getColor())){
+				current->getRight()->setColor(false);
+				current->setColor(true);
+			}
+			//cout << "testo";
+			current = current->getRight();
+			fixMinorErrors(head, current);
 		}
-		//cout << "testo";
-		current = current->getRight();
-		fixMinorErrors(head, current);
 	}
 }
 

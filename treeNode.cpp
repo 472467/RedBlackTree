@@ -250,7 +250,9 @@ void TreeNode::safeDelete2(TreeNode*& head){//BINARY DELETE FIRST THEN FIX THE N
 						
 					}
 				}else{
-					std::cout << "ERROR: Trying to delete the last node, deletion aborted.\n";
+					head  = NULL;
+					///delete this;
+					resolved = true;
 				}
 			}
 			
